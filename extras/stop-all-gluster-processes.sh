@@ -175,6 +175,15 @@ main()
     # remove all the options that have been parsed by getopts
     shift $((OPTIND-1))
 
+    while true; do
+        read -p "Do you want to kill all GlusterFS processes [y/n]? " yn
+        case "$yn" in
+            [Yy]* ) break;;
+            [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+
     kill_mounts TERM
     kill_georep_gsync TERM
     kill_bricks_and_services TERM
@@ -186,6 +195,26 @@ main()
     kill_mounts KILL
     kill_georep_gsync KILL
     kill_bricks_and_services KILL
+
+    printf "\nAll GlusterFS processes were killed and GlusterFS is not\n"
+    printf "operational anymore. Restart the GlusterFS process if you do not\n"
+    printf "plan to restart whole server.\n\n"
+
+    while true; do
+        read -p "Do you want to restart glusterd.service [y/n]? " yn
+        case "$yn" in
+            [Yy]* )
+                systemctl restart glusterd.service
+                sleep 1
+                printf "\nPlease check if GlusterFS is operational again.\n"
+                printf "Here is output of 'gluster peer status'. All nodes\n"
+                printf "should be connected."
+                gluster peer status
+                break;;
+            [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
 
     exit ${errors};
 }
