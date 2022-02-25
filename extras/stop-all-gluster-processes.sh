@@ -208,7 +208,7 @@ main()
                 sleep 1
                 printf "\nPlease check if GlusterFS is operational again.\n"
                 printf "Here is output of 'gluster peer status'. All nodes\n"
-                printf "should be connected."
+                printf "should be connected.\n\n"
                 gluster peer status
                 break;;
             [Nn]* ) exit;;
